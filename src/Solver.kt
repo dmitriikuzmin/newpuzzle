@@ -57,7 +57,6 @@ fun solve(): List<String> {
 
 fun main() {
 
-   println(solve().joinToString(separator = "\n"))
 
     val puzzle = Puzzle(3)
 
@@ -67,15 +66,31 @@ fun main() {
 
     println(puzzle)
 
-    val cell = puzzle.find(10)
+    val smth = solve()
 
-    println(cell)
+    println(smth.joinToString(separator = "\n"))
 
-    val truval = puzzle.get(cell)
+    println(smth.size)
 
-    println(truval)
 
-    println(puzzle.manhattan())
+
+//    val puzzle = Puzzle(3)
+//
+//    println("Паззл до шафлла\n$puzzle")
+//
+//    puzzle.shuffle()
+//
+//    println(puzzle)
+//
+//    val cell = puzzle.find(10)
+//
+//    println(cell)
+//
+//    val truval = puzzle.get(cell)
+//
+//    println(truval)
+//
+//    println(puzzle.manhattan())
 
 //
 //    val smth = puzzle.move(Cell(0,-1))

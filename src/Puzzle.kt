@@ -1,5 +1,7 @@
 package core
 
+import kotlin.math.abs
+
 data class Puzzle constructor(private val size: Int) {
 
     private val numbers = Array(size) { IntArray(size) }
@@ -19,7 +21,11 @@ data class Puzzle constructor(private val size: Int) {
         //val random = (0..15).shuffled().toList()
 
         // for 8 puzzle
-        val random = (0..8).shuffled().toList()
+        var random = (0..8).shuffled().toList()
+
+        while (!solvable(random)) {
+            random = random.shuffled()
+        }
 
         for (i in 0 until size) {
             for (j in 0 until size) {
@@ -71,7 +77,6 @@ data class Puzzle constructor(private val size: Int) {
     }
 
 
-
     fun find(value: Int): Cell {
         var one = 0
         var two = 0
@@ -89,10 +94,10 @@ data class Puzzle constructor(private val size: Int) {
         return Cell(one, two)
     }
 
-    private val up = Cell(-1,0)
-    private val down = Cell(1,0)
-    private val right = Cell(0,1)
-    private val left = Cell(-0,-1)
+    private val up = Cell(-1, 0)
+    private val down = Cell(1, 0)
+    private val right = Cell(0, 1)
+    private val left = Cell(-0, -1)
 
 
 //    private val up = Cell(0, -1)
@@ -144,18 +149,16 @@ data class Puzzle constructor(private val size: Int) {
 //    )
 
     private val correct = mapOf(
-        0 to Cell(2,2),
+        0 to Cell(2, 2),
         1 to Cell(0, 0),
-        2 to Cell(0,1),
-        3 to Cell(0,2),
-        4 to Cell(1,0),
-        5 to Cell(1,1),
+        2 to Cell(0, 1),
+        3 to Cell(0, 2),
+        4 to Cell(1, 0),
+        5 to Cell(1, 1),
         6 to Cell(1, 2),
-        7 to Cell(2,0),
-        8 to Cell(2,1)
+        7 to Cell(2, 0),
+        8 to Cell(2, 1)
     )
-
-
 
 
     // Можно использовать manhattan для нахождения победы
@@ -167,7 +170,8 @@ data class Puzzle constructor(private val size: Int) {
             val pos = find(i)
             val needed = correct[i]
 
-            counter += if (pos != needed) 1 else 0
+            //counter += if (pos != needed) 1 else 0
+            counter += abs(pos.x - needed!!.x) + abs(pos.y - needed!!.y)
         }
 
         return counter
@@ -198,4 +202,14 @@ data class Puzzle constructor(private val size: Int) {
 //        }
 //        return true
 //    }
+
+    fun solvable(list: List<Int>): Boolean {
+        var counter = 0
+
+        list.forEach {
+            counter += list.subList(list.indexOf(it), list.size - 1).count { number -> number < it }
+        }
+
+        return counter % 2 == 0
+    }
 }
