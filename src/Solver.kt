@@ -5,7 +5,7 @@ import java.util.*
 
 fun solve(): List<String> {
 
-    val init = Puzzle(4).shuffle()
+    val init = Puzzle(3).shuffle()
 
     val queue = mutableListOf(Node(null, init))
 
@@ -13,7 +13,20 @@ fun solve(): List<String> {
 
     while (queue.isNotEmpty()) {
 
+        val max = queue.maxBy { it.getDepth() }
+
+        val list = mutableListOf<Node>()
+
+        queue.forEach {
+            if (it.getDepth() != max!!.getDepth()) {
+                list.add(it)
+            }
+        }
+
+        queue.removeAll(list)
+
         queue.sortBy { it.score }
+
 
         val node = queue.first()
 
@@ -44,10 +57,9 @@ fun solve(): List<String> {
 
 fun main() {
 
-    //println(solve())
+   println(solve().joinToString(separator = "\n"))
 
-
-    val puzzle = Puzzle(4)
+    val puzzle = Puzzle(3)
 
     println("Паззл до шафлла\n$puzzle")
 
@@ -55,9 +67,20 @@ fun main() {
 
     println(puzzle)
 
-    val smth = puzzle.move(Cell(0,-1))
+    val cell = puzzle.find(10)
 
-    println(smth)
+    println(cell)
+
+    val truval = puzzle.get(cell)
+
+    println(truval)
+
+    println(puzzle.manhattan())
+
+//
+//    val smth = puzzle.move(Cell(0,-1))
+//
+//    println(smth)
 //
 //    println("Паззл после шафлла\n$puzzle")
 //

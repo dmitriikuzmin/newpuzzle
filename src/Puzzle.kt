@@ -5,15 +5,25 @@ data class Puzzle constructor(private val size: Int) {
     private val numbers = Array(size) { IntArray(size) }
 
     fun shuffle(): Puzzle {
-        //val list = mutableListOf(0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15)
-        //val list = mutableListOf(1,2,3,4,5,6,7,8,9,10,11,12,13,14,0,15)
+        // easy board
+        //val random = mutableListOf(1,2,3,4,5,6,7,8,9,10,0,15,13,14,12,11)
+
+        // medium board
+        // val random = mutableListOf(1,2,3,4,5,6,7,8,15,14,13,12,9,10,11,0)
+
+        // medium board
+        //val random = mutableListOf(1,2,3,4,5,6,7,8,10,0,15,11,9,13,12,14)
+
 
         // for 15 puzzle
-        val random = (0..15).shuffled().toList()
+        //val random = (0..15).shuffled().toList()
+
+        // for 8 puzzle
+        val random = (0..8).shuffled().toList()
 
         for (i in 0 until size) {
             for (j in 0 until size) {
-                this.numbers[i][j] = random[4 * i + j]
+                this.numbers[i][j] = random[3 * i + j] // 4i + j for 4
             }
         }
 
@@ -32,8 +42,14 @@ data class Puzzle constructor(private val size: Int) {
 //        return this
     }
 
+
+    fun get(cell: Cell): Int {
+        return numbers[cell.x][cell.y]
+    }
+
+
     fun move(to: Cell): Puzzle {
-        val newPuzzle = Puzzle(4)
+        val newPuzzle = Puzzle(3)
 
         for (i in numbers.indices) {
             for (j in numbers.indices) {
@@ -63,8 +79,8 @@ data class Puzzle constructor(private val size: Int) {
         for (i in numbers.indices) {
             for (j in numbers.indices) {
                 if (numbers[i][j] == value) {
-                    one = j
-                    two = i
+                    one = i
+                    two = j
                     break
                 }
             }
@@ -73,10 +89,16 @@ data class Puzzle constructor(private val size: Int) {
         return Cell(one, two)
     }
 
-    private val up = Cell(0, -1)
-    private val down = Cell(0, 1)
-    private val right = Cell(1, 0)
-    private val left = Cell(-1, 0)
+    private val up = Cell(-1,0)
+    private val down = Cell(1,0)
+    private val right = Cell(0,1)
+    private val left = Cell(-0,-1)
+
+
+//    private val up = Cell(0, -1)
+//    private val down = Cell(0, 1)
+//    private val right = Cell(1, 0)
+//    private val left = Cell(-1, 0)
 
 
     fun actions(): List<Cell> {
@@ -102,31 +124,46 @@ data class Puzzle constructor(private val size: Int) {
     }
 
 
+//    private val correct = mapOf(
+//        0 to Cell(3, 3),
+//        1 to Cell(0, 0),
+//        2 to Cell(0,1),
+//        3 to Cell(0,2),
+//        4 to Cell(0,3),
+//        5 to Cell(1,0),
+//        6 to Cell(1, 1),
+//        7 to Cell(1, 2),
+//        8 to Cell(1, 3),
+//        9 to Cell(2, 0),
+//        10 to Cell(2, 1),
+//        11 to Cell(2, 2),
+//        12 to Cell(2, 3),
+//        13 to Cell(3, 0),
+//        14 to Cell(3, 1),
+//        15 to Cell(3, 2)
+//    )
+
     private val correct = mapOf(
-        0 to Cell(3, 3),
+        0 to Cell(2,2),
         1 to Cell(0, 0),
-        2 to Cell(1, 0),
-        3 to Cell(2, 0),
-        4 to Cell(3, 0),
-        5 to Cell(0, 1),
-        6 to Cell(1, 1),
-        7 to Cell(2, 1),
-        8 to Cell(3, 1),
-        9 to Cell(0, 2),
-        10 to Cell(1, 2),
-        11 to Cell(2, 2),
-        12 to Cell(3, 2),
-        13 to Cell(0, 3),
-        14 to Cell(1, 3),
-        15 to Cell(2, 3)
+        2 to Cell(0,1),
+        3 to Cell(0,2),
+        4 to Cell(1,0),
+        5 to Cell(1,1),
+        6 to Cell(1, 2),
+        7 to Cell(2,0),
+        8 to Cell(2,1)
     )
+
+
+
 
     // Можно использовать manhattan для нахождения победы
 
     fun manhattan(): Int {
         var counter = 0
 
-        for (i in 0 until 15) {
+        for (i in 0..8) { // до 15 для 4 паззла
             val pos = find(i)
             val needed = correct[i]
 
