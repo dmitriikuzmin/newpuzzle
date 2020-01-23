@@ -37,7 +37,7 @@ fun solve(accuracy: Double, limit: Int): List<String> {
 }
 
 fun main() {
-    val solvedPuzzle = solve(0.4, 50000) // best - 0.2
+    val solvedPuzzle = solve(0.3, 50000)
 
     println(solvedPuzzle.joinToString(separator = "\n"))
 

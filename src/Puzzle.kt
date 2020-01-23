@@ -90,69 +90,30 @@ data class Puzzle constructor(private val size: Int) {
     private val up = Cell(-1, 0)
     private val down = Cell(1, 0)
     private val right = Cell(0, 1)
-    private val left = Cell(-0, -1)
-
+    private val left = Cell(0, -1)
 
     fun actions(): List<Cell> {
         val zero = find(0)
-        val column = zero.x
-        val row = zero.y
-        val size = size - 1
-        val actions: List<Cell>
+        val row = zero.x
+        val column = zero.y
+        val actions = mutableListOf<Cell>()
 
-        actions = when {
-            row == 0 && column == 0 -> listOf(down, right)
-            row == size && column == 0 -> listOf(down, left)
-            row == size && column == size -> listOf(up, left)
-            row == 0 && column == size -> listOf(up, right)
-            (row == 1 || row == 2) && column == 0 -> listOf(right, left, down)
-            (row == 1 || row == 2) && column == size -> listOf(right, left, up)
-            row == 0 && (column == 1 || column == 2) -> listOf(up, down, right)
-            row == size && (column == 1 || column == 2) -> listOf(up, down, left)
-            else -> listOf(up, down, left, right)
-        }
+        if (column != 0) actions.add(left)
+        if (column != 3) actions.add(right)
+        if (row != 0) actions.add(up)
+        if (row != 3) actions.add(down)
+
         return actions
     }
-
-
-//    private val correct = mapOf(
-//        0 to Cell(3, 3),
-//        1 to Cell(0, 0),
-//        2 to Cell(0, 1),
-//        3 to Cell(0, 2),
-//        4 to Cell(0, 3),
-//        5 to Cell(1, 0),
-//        6 to Cell(1, 1),
-//        7 to Cell(1, 2),
-//        8 to Cell(1, 3),
-//        9 to Cell(2, 0),
-//        10 to Cell(2, 1),
-//        11 to Cell(2, 2),
-//        12 to Cell(2, 3),
-//        13 to Cell(3, 0),
-//        14 to Cell(3, 1),
-//        15 to Cell(3, 2)
-//    )
-
-//    private val correct = mapOf(
-//        0 to Cell(2, 2),
-//        1 to Cell(0, 0),
-//        2 to Cell(0, 1),
-//        3 to Cell(0, 2),
-//        4 to Cell(1, 0),
-//        5 to Cell(1, 1),
-//        6 to Cell(1, 2),
-//        7 to Cell(2, 0),
-//        8 to Cell(2, 1)
-//    )
 
 
     fun h(): Int {
         var counter = 0
 
         for (i in 0..15) {
-            val pos = find(i)
-            val needed = when { // correct[i]
+            val now = find(i)
+
+            val needed = when {
                 i == 0 -> Cell(3,3)
                 i < 5 -> Cell(0,i-1)
                 i < 9 -> Cell(1,i-5)
@@ -160,7 +121,7 @@ data class Puzzle constructor(private val size: Int) {
                 else -> Cell(3,i-13)
             }
 
-            counter += abs(pos.x - needed.x) + abs(pos.y - needed.y)
+            counter += abs(now.x - needed.x) + abs(now.y - needed.y)
         }
 
         return counter
