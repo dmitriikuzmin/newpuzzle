@@ -171,7 +171,7 @@ data class Puzzle constructor(private val size: Int) {
             val needed = correct[i]
 
             //counter += if (pos != needed) 1 else 0
-            counter += abs(pos.x - needed!!.x) + abs(pos.y - needed!!.y)
+            counter += abs(pos.x - needed!!.x) + abs(pos.y - needed.y)
         }
 
         return counter
@@ -206,8 +206,13 @@ data class Puzzle constructor(private val size: Int) {
     fun solvable(list: List<Int>): Boolean {
         var counter = 0
 
-        list.forEach {
-            counter += list.subList(list.indexOf(it), list.size - 1).count { number -> number < it }
+        val newList = list.toMutableList()
+        newList.remove(0)
+
+        newList.forEach {
+            val check = newList.subList(newList.indexOf(it), newList.size)
+            val smth = check.count { number -> number < it }
+            counter += smth
         }
 
         return counter % 2 == 0

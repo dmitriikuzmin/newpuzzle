@@ -1,10 +1,7 @@
 package core
 
-import java.util.*
-
 
 fun solve(): List<String> {
-
     val init = Puzzle(3).shuffle()
 
     val queue = mutableListOf(Node(null, init))
@@ -13,24 +10,13 @@ fun solve(): List<String> {
 
     while (queue.isNotEmpty()) {
 
-        val max = queue.maxBy { it.getDepth() }
-
-        val list = mutableListOf<Node>()
-
-        queue.forEach {
-            if (it.getDepth() != max!!.getDepth()) {
-                list.add(it)
-            }
-        }
-
-        queue.removeAll(list)
-
         queue.sortBy { it.score }
-
 
         val node = queue.first()
 
         queue.remove(node)
+
+        set.add(node.toString())
 
         if (node.solved()) {
             return node.path()
@@ -45,10 +31,10 @@ fun solve(): List<String> {
 
             if (!set.contains(child.toString())) {
                 queue.add(child)
-                set.add(child.toString())
+               // set.add(child.toString())
             }
         }
-        queue.remove(node)
+       // queue.remove(node)
     }
 
     return listOf()
@@ -58,13 +44,13 @@ fun solve(): List<String> {
 fun main() {
 
 
-    val puzzle = Puzzle(3)
-
-    println("Паззл до шафлла\n$puzzle")
-
-    puzzle.shuffle()
-
-    println(puzzle)
+//    val puzzle = Puzzle(3)
+//
+//    println("Паззл до шафлла\n$puzzle")
+//
+//    puzzle.shuffle()
+//
+//    println(puzzle)
 
     val smth = solve()
 
