@@ -1,6 +1,5 @@
 package core
 
-
 class Cell(val x: Int, val y: Int) {
 
     operator fun plus(other: Cell): Cell {
@@ -20,9 +19,5 @@ class Cell(val x: Int, val y: Int) {
         var result = 11
         result = 19 * result + x
         return 19 * result + y
-    }
-
-    override fun toString(): String {
-        return "$x:$y"
     }
 }

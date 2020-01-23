@@ -1,10 +1,10 @@
 package core
 
-class Node constructor(private val parent: Node? = null, val puzzle: Puzzle) {
+class Node constructor(private val parent: Node? = null, val puzzle: Puzzle, accuracy: Double) {
 
     private val depth: Int = if (parent != null) parent.depth + 1 else 0
 
-    val score: Double = this.depth * 0.1 + puzzle.manhattan()
+    val score: Double = this.depth * accuracy + puzzle.h()
 
     fun solved(): Boolean {
         return puzzle.win()
@@ -16,6 +16,10 @@ class Node constructor(private val parent: Node? = null, val puzzle: Puzzle) {
 
     override fun toString(): String {
         return puzzle.toString()
+    }
+
+    fun h(): Int {
+        return puzzle.h()
     }
 
     fun path(): List<String> {
@@ -32,5 +36,4 @@ class Node constructor(private val parent: Node? = null, val puzzle: Puzzle) {
         list.reverse()
         return list
     }
-
 }

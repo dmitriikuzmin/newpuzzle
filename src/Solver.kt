@@ -1,50 +1,45 @@
 package core
 
-fun solve(): List<String> {
+fun solve(accuracy: Double, limit: Int): List<String> {
     val init = Puzzle(4).shuffle()
 
-    val queue = mutableListOf(Node(null, init))
+    val queue = mutableListOf(Node(null, init, accuracy))
 
     val set = mutableSetOf(init.toString())
 
-    while (set.size < 50000) {
-
+    while (set.size < limit) {
         queue.sortBy { it.score }
 
         val node = queue.first()
 
         queue.remove(node)
-
         set.add(node.toString())
-
-        if (node.solved()) {
-            return node.path()
-        }
 
         val actions = node.actions()
 
         actions.forEach {
-            val newPuzzle = node.puzzle.move(it)
+            val child = Node(node, node.puzzle.move(it), accuracy)
 
-            val child = Node(node, newPuzzle)
+            if (child.solved()) {
+                return child.path()
+            }
 
             if (!set.contains(child.toString())) {
                 queue.add(child)
-               // set.add(child.toString())
             }
         }
-       // queue.remove(node)
     }
 
-    return listOf(init.toString(),init.manhattan().toString(),queue.first().toString(), queue.first().puzzle.manhattan().toString())
+    return listOf(init.toString(),
+        init.h().toString(),
+        queue.first().toString(),
+        queue.first().h().toString())
 }
 
-
 fun main() {
+    val solvedPuzzle = solve(0.4, 50000) // best - 0.2
 
-    val smth = solve()
+    println(solvedPuzzle.joinToString(separator = "\n"))
 
-    println(smth.joinToString(separator = "\n"))
-
-    println(smth.size)
+    println(solvedPuzzle.size)
 }

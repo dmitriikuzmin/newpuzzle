@@ -7,11 +7,9 @@ data class Puzzle constructor(private val size: Int) {
     private val numbers = Array(size) { IntArray(size) }
 
     fun shuffle(): Puzzle {
-
         var random = when (size) {
             3 -> (0..8).shuffled().toList()
             else -> (0..15).shuffled().toList()
-
         }
 
         while (!solvable(random)) {
@@ -20,11 +18,29 @@ data class Puzzle constructor(private val size: Int) {
 
         for (i in 0 until size) {
             for (j in 0 until size) {
-                this.numbers[i][j] = random[size * i + j] // 4i + j for 4
+                this.numbers[i][j] = random[size * i + j]
             }
         }
 
         return this
+    }
+
+    private fun solvable(list: List<Int>): Boolean {
+        var counter = 0
+
+        val pos = when (list.indexOf(0)) {
+            in 1..3, in 8..11 -> true
+            else -> false
+        }
+
+        val newList = list.toMutableList()
+        newList.remove(0)
+
+        newList.forEach {
+            counter += newList.subList(newList.indexOf(it), newList.size).count { number -> number < it }
+        }
+
+        return (counter % 2 == 0 && !pos) || (counter % 2 == 1 && pos)
     }
 
 
@@ -32,13 +48,25 @@ data class Puzzle constructor(private val size: Int) {
         return numbers[cell.x][cell.y]
     }
 
+    private fun find(value: Int): Cell {
+        var one = 0
+        var two = 0
+
+        for (i in numbers.indices) {
+            for (j in numbers.indices) {
+                if (numbers[i][j] == value) {
+                    one = i
+                    two = j
+                    break
+                }
+            }
+        }
+
+        return Cell(one, two)
+    }
 
     fun move(to: Cell): Puzzle {
-
-        /**
-         * Тут захардкожено
-         */
-        val newPuzzle = Puzzle(4)
+        val newPuzzle = Puzzle(size)
 
         for (i in numbers.indices) {
             for (j in numbers.indices) {
@@ -59,34 +87,10 @@ data class Puzzle constructor(private val size: Int) {
         return newPuzzle
     }
 
-
-    fun find(value: Int): Cell {
-        var one = 0
-        var two = 0
-
-        for (i in numbers.indices) {
-            for (j in numbers.indices) {
-                if (numbers[i][j] == value) {
-                    one = i
-                    two = j
-                    break
-                }
-            }
-        }
-
-        return Cell(one, two)
-    }
-
     private val up = Cell(-1, 0)
     private val down = Cell(1, 0)
     private val right = Cell(0, 1)
     private val left = Cell(-0, -1)
-
-
-//    private val up = Cell(0, -1)
-//    private val down = Cell(0, 1)
-//    private val right = Cell(1, 0)
-//    private val left = Cell(-1, 0)
 
 
     fun actions(): List<Cell> {
@@ -95,7 +99,6 @@ data class Puzzle constructor(private val size: Int) {
         val row = zero.y
         val size = size - 1
         val actions: List<Cell>
-
 
         actions = when {
             row == 0 && column == 0 -> listOf(down, right)
@@ -112,24 +115,24 @@ data class Puzzle constructor(private val size: Int) {
     }
 
 
-    private val correct = mapOf(
-        0 to Cell(3, 3),
-        1 to Cell(0, 0),
-        2 to Cell(0, 1),
-        3 to Cell(0, 2),
-        4 to Cell(0, 3),
-        5 to Cell(1, 0),
-        6 to Cell(1, 1),
-        7 to Cell(1, 2),
-        8 to Cell(1, 3),
-        9 to Cell(2, 0),
-        10 to Cell(2, 1),
-        11 to Cell(2, 2),
-        12 to Cell(2, 3),
-        13 to Cell(3, 0),
-        14 to Cell(3, 1),
-        15 to Cell(3, 2)
-    )
+//    private val correct = mapOf(
+//        0 to Cell(3, 3),
+//        1 to Cell(0, 0),
+//        2 to Cell(0, 1),
+//        3 to Cell(0, 2),
+//        4 to Cell(0, 3),
+//        5 to Cell(1, 0),
+//        6 to Cell(1, 1),
+//        7 to Cell(1, 2),
+//        8 to Cell(1, 3),
+//        9 to Cell(2, 0),
+//        10 to Cell(2, 1),
+//        11 to Cell(2, 2),
+//        12 to Cell(2, 3),
+//        13 to Cell(3, 0),
+//        14 to Cell(3, 1),
+//        15 to Cell(3, 2)
+//    )
 
 //    private val correct = mapOf(
 //        0 to Cell(2, 2),
@@ -144,52 +147,45 @@ data class Puzzle constructor(private val size: Int) {
 //    )
 
 
-    // Можно использовать manhattan для нахождения победы
-
-    fun manhattan(): Int {
+    fun h(): Int {
         var counter = 0
 
-        for (i in 0..15) { // до 15 для 4 паззла
+        for (i in 0..15) {
             val pos = find(i)
-            val needed = correct[i]
+            val needed = when { // correct[i]
+                i == 0 -> Cell(3,3)
+                i < 5 -> Cell(0,i-1)
+                i < 9 -> Cell(1,i-5)
+                i < 13 -> Cell(2,i-9)
+                else -> Cell(3,i-13)
+            }
 
-            counter += abs(pos.x - needed!!.x) + abs(pos.y - needed.y)
+            counter += abs(pos.x - needed.x) + abs(pos.y - needed.y)
         }
 
         return counter
     }
 
+    fun win(): Boolean = h() == 0
 
     override fun toString(): String {
         var str = ""
         for (i in numbers.indices) {
-            val smth = numbers[i].joinToString(separator = " ")
-            str += "$smth\n"
+            val row = numbers[i].joinToString(separator = " ")
+            str += "$row\n"
         }
         return str
     }
 
-
-    fun win(): Boolean = manhattan() == 0
-
-
-    fun solvable(list: List<Int>): Boolean {
-        var counter = 0
-
-        val pos = when (list.indexOf(0)) {
-            in 1..3, in 8..11 -> true
-            else -> false
-        }
-
-        val newList = list.toMutableList()
-        newList.remove(0)
-
-        newList.forEach {
-            val check = newList.subList(newList.indexOf(it), newList.size)
-            val smth = check.count { number -> number < it }
-            counter += smth
-        }
-
-        return (counter % 2 == 0 && !pos) || (counter % 2 == 1 && pos)
-    }
+//    fun flat(): MutableList<Int> {
+//        val list = mutableListOf<Int>()
+//
+//        for (i in numbers.indices) {
+//            for (j in numbers.indices) {
+//                list.add(numbers[i][j])
+//            }
+//        }
+//
+//        return list
+//    }
 }
