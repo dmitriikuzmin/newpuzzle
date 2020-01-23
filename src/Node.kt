@@ -4,11 +4,7 @@ class Node constructor(private val parent: Node? = null, val puzzle: Puzzle) {
 
     private val depth: Int = if (parent != null) parent.depth + 1 else 0
 
-    fun getDepth():Int {
-        return this.depth
-    }
-
-    val score: Int = this.depth + puzzle.manhattan()
+    val score: Double = this.depth * 0.1 + puzzle.manhattan()
 
     fun solved(): Boolean {
         return puzzle.win()

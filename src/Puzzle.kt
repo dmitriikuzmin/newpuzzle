@@ -7,21 +7,12 @@ data class Puzzle constructor(private val size: Int) {
     private val numbers = Array(size) { IntArray(size) }
 
     fun shuffle(): Puzzle {
-        // easy board
-        //val random = mutableListOf(1,2,3,4,5,6,7,8,9,10,0,15,13,14,12,11)
 
-        // medium board
-        // val random = mutableListOf(1,2,3,4,5,6,7,8,15,14,13,12,9,10,11,0)
+        var random = when (size) {
+            3 -> (0..8).shuffled().toList()
+            else -> (0..15).shuffled().toList()
 
-        // medium board
-        //val random = mutableListOf(1,2,3,4,5,6,7,8,10,0,15,11,9,13,12,14)
-
-
-        // for 15 puzzle
-        //val random = (0..15).shuffled().toList()
-
-        // for 8 puzzle
-        var random = (0..8).shuffled().toList()
+        }
 
         while (!solvable(random)) {
             random = random.shuffled()
@@ -29,23 +20,11 @@ data class Puzzle constructor(private val size: Int) {
 
         for (i in 0 until size) {
             for (j in 0 until size) {
-                this.numbers[i][j] = random[3 * i + j] // 4i + j for 4
+                this.numbers[i][j] = random[size * i + j] // 4i + j for 4
             }
         }
 
         return this
-
-
-        // for 8 puzzle
-//        val random = (0..8).shuffled().toList()
-//
-//        for (i in 0 until size) {
-//            for (j in 0 until size) {
-//                this.numbers[i][j] = random[2 * i + j]
-//            }
-//        }
-//
-//        return this
     }
 
 
@@ -55,7 +34,11 @@ data class Puzzle constructor(private val size: Int) {
 
 
     fun move(to: Cell): Puzzle {
-        val newPuzzle = Puzzle(3)
+
+        /**
+         * Тут захардкожено
+         */
+        val newPuzzle = Puzzle(4)
 
         for (i in numbers.indices) {
             for (j in numbers.indices) {
@@ -129,36 +112,36 @@ data class Puzzle constructor(private val size: Int) {
     }
 
 
-//    private val correct = mapOf(
-//        0 to Cell(3, 3),
-//        1 to Cell(0, 0),
-//        2 to Cell(0,1),
-//        3 to Cell(0,2),
-//        4 to Cell(0,3),
-//        5 to Cell(1,0),
-//        6 to Cell(1, 1),
-//        7 to Cell(1, 2),
-//        8 to Cell(1, 3),
-//        9 to Cell(2, 0),
-//        10 to Cell(2, 1),
-//        11 to Cell(2, 2),
-//        12 to Cell(2, 3),
-//        13 to Cell(3, 0),
-//        14 to Cell(3, 1),
-//        15 to Cell(3, 2)
-//    )
-
     private val correct = mapOf(
-        0 to Cell(2, 2),
+        0 to Cell(3, 3),
         1 to Cell(0, 0),
         2 to Cell(0, 1),
         3 to Cell(0, 2),
-        4 to Cell(1, 0),
-        5 to Cell(1, 1),
-        6 to Cell(1, 2),
-        7 to Cell(2, 0),
-        8 to Cell(2, 1)
+        4 to Cell(0, 3),
+        5 to Cell(1, 0),
+        6 to Cell(1, 1),
+        7 to Cell(1, 2),
+        8 to Cell(1, 3),
+        9 to Cell(2, 0),
+        10 to Cell(2, 1),
+        11 to Cell(2, 2),
+        12 to Cell(2, 3),
+        13 to Cell(3, 0),
+        14 to Cell(3, 1),
+        15 to Cell(3, 2)
     )
+
+//    private val correct = mapOf(
+//        0 to Cell(2, 2),
+//        1 to Cell(0, 0),
+//        2 to Cell(0, 1),
+//        3 to Cell(0, 2),
+//        4 to Cell(1, 0),
+//        5 to Cell(1, 1),
+//        6 to Cell(1, 2),
+//        7 to Cell(2, 0),
+//        8 to Cell(2, 1)
+//    )
 
 
     // Можно использовать manhattan для нахождения победы
@@ -166,11 +149,10 @@ data class Puzzle constructor(private val size: Int) {
     fun manhattan(): Int {
         var counter = 0
 
-        for (i in 0..8) { // до 15 для 4 паззла
+        for (i in 0..15) { // до 15 для 4 паззла
             val pos = find(i)
             val needed = correct[i]
 
-            //counter += if (pos != needed) 1 else 0
             counter += abs(pos.x - needed!!.x) + abs(pos.y - needed.y)
         }
 
@@ -191,20 +173,13 @@ data class Puzzle constructor(private val size: Int) {
     fun win(): Boolean = manhattan() == 0
 
 
-//        val list = mutableListOf(1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 0)
-//
-//        for (i in numbers.indices) {
-//            for (j in numbers.indices) {
-//                if (numbers[j][i] != list[4 * i + j]) {
-//                    return false
-//                }
-//            }
-//        }
-//        return true
-//    }
-
     fun solvable(list: List<Int>): Boolean {
         var counter = 0
+
+        val pos = when (list.indexOf(0)) {
+            in 1..3, in 8..11 -> true
+            else -> false
+        }
 
         val newList = list.toMutableList()
         newList.remove(0)
@@ -215,6 +190,6 @@ data class Puzzle constructor(private val size: Int) {
             counter += smth
         }
 
-        return counter % 2 == 0
+        return (counter % 2 == 0 && !pos) || (counter % 2 == 1 && pos)
     }
 }
